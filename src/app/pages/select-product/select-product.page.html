@@ -1,0 +1,84 @@
+<ion-header [translucent]="true">
+  <!-- <ion-toolbar>
+    <ion-title>selectProduct</ion-title>
+  </ion-toolbar> -->
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ng-container *ngIf="!isScanning">
+  <ion-item lines="none">
+    <div class="ion-padding-start ion-padding-bottom">
+      <br>
+      <ion-label>
+        <h2>Buscar Producto:</h2>
+      </ion-label>
+      <ion-row class="ion-align-items-center">
+        <ion-col size="10">
+          <ion-searchbar [(ngModel)]="searchValue" placeholder="Código/Nombre" (ionChange)="searchChanged($event)" searchIcon="search" ></ion-searchbar>
+        </ion-col>
+        <ion-col size="2">
+          <!-- Botón para escanear código de barras o QR -->
+          <ion-button (click)="scanCode()" color="primary" fill="clear" style="font-size: 1.2em; --padding-start: 0; --padding-end: 0;" >
+            <ion-icon slot="icon-only" name="barcode-outline" style="font-size: 1.5em;"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </div>
+  </ion-item>
+
+  <div *ngIf="products.length > 0" class="ion-padding">
+    <ion-row class="ion-align-items-center ion-padding-horizontal">
+      <ion-col size="7">
+        <h5>{{ totalResults }} Resultado/s</h5>
+      </ion-col>
+      <ion-col size="5">
+        <h6>(Página {{ currentPage + 1 }} de {{ totalPages }})</h6>
+      </ion-col>
+    </ion-row>
+
+    <ion-card *ngFor="let product of products">
+      <ion-card-header>
+        <ion-row class="ion-align-items-center">
+          <ion-col size="6">
+            <ion-badge color="warning" mode="ios">
+              ${{ product.IMA_PRECIO2 | number:'1.2-2' }}
+            </ion-badge>
+          </ion-col>
+          <ion-col size="6" class="ion-text-right">
+            <ion-card-subtitle [color]="product.STOCK_BAE <= 0 ? 'danger' : 'success'">
+              Stock Tar: {{ product.STOCK_BAE }}
+            </ion-card-subtitle>
+            <ion-card-subtitle [color]="product.STOCK_BTE <= 0 ? 'danger' : 'success'">
+              Stock Ame: {{ product.STOCK_BTE }}
+            </ion-card-subtitle>
+          </ion-col>
+        </ion-row>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-row>
+          <ion-col size="8">
+            <ion-card-title>{{ product.IMA_ARTICULO }}</ion-card-title>
+            <ion-card-subtitle>{{ product.IMA_DESCRIPCION }}</ion-card-subtitle>
+          </ion-col>
+          <ion-col size="4" class="ion-text-right">
+            <ion-button fill="clear" color="secondary" size="large" (click)="productSelected(product)" >
+              <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-card-content>
+    </ion-card>
+  </div>
+  
+  <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+    <ion-fab-button (click)="previousPage()" [disabled]="currentPage <= 0 " color="primary">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" >
+    <ion-fab-button (click)="nextPage()" [disabled]="currentPage + 1 >= totalPages" color="primary">
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ng-container>
+</ion-content>

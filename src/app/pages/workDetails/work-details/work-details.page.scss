@@ -1,0 +1,36 @@
+/* Agrega esto en tu archivo de estilos work-details.page.scss */
+ion-button.small-button {
+    --padding-start: 5px;
+    --padding-end: 5px;
+    --padding-top: 5px;
+    --padding-bottom: 5px;
+    font-size: 0.7em;
+  }
+  
+  ion-col {
+    display: flex;
+    align-items: center;
+  }
+  
+  ion-grid {
+    --ion-grid-column-padding: 8px;
+  }
+  
+  /* Ajustes para dispositivos con pantallas más pequeñas */
+  @media only screen and (max-width: 600px) {
+    ion-col {
+      --size: 12;
+    }
+  }
+  
+  .button-container {
+    padding: 16px;
+    width: 100%; // Esto asegura que el contenedor ocupe todo el ancho
+  }
+  
+  .save-button {
+    margin-top: 20px; // Esto añade espacio encima del botón
+    --border-radius: 8px; // Esto aplica un borde redondeado
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // Esto añade una sombra sutil
+  }
+  

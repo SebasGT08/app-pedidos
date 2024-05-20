@@ -1,0 +1,32 @@
+// Basic Adjustments for visibility
+ion-content {
+    color: var(--ion-color-step-950); // Dark text for light backgrounds
+    --background: var(--ion-color-step-50);
+  }
+  
+  ion-header {
+    --background: var(--ion-color-step-300);
+    --ion-color-base: var(--ion-color-step-950);
+  }
+  
+  ion-toolbar {
+    --background: var(--ion-color-step-300);
+  }
+  
+  // Enhanced Button Styles
+  ion-button {
+    width: 100%;
+    --background: var(--ion-color-step-700);
+    --background-hover: var(--ion-color-step-800);
+    --background-activated: var(--ion-color-step-900);
+    border: 2px solid white; // Adds a white border
+    border-radius: 5px; // Slightly rounded corners for aesthetics
+    color: var(--ion-color-step-50); // Light text for dark buttons
+  }
+  
+  // Updating icons for better visibility
+  ion-icon {
+    color: var(--ion-color-step-50);
+    --ionicon-stroke-width: 32px; // Ensures icons are bold and visible
+  }
+  

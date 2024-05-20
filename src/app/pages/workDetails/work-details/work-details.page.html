@@ -1,0 +1,51 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="openMenu()">
+        <ion-icon slot="icon-only" name="menu"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Trabajo Realizado</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6">Descripción del Trabajo</ion-col>
+      <ion-col size="2">Cant.</ion-col>
+      <ion-col size="2">Precio</ion-col>
+      <ion-col size="2">Total</ion-col>
+    </ion-row>
+    <ion-row *ngFor="let work of workDetails; let i = index">
+      <ion-col size="6">{{ work.TSTT_DESCRIPCION }}</ion-col>
+      <ion-col size="2">{{ work.TSTT_CANTIDAD }}</ion-col>
+      <ion-col size="2">{{ work.TSTT_PRECIO }}</ion-col>
+      <ion-col size="2">{{ work.TSTT_TOTAL }}</ion-col>
+      <ion-col>
+        <ion-button size="small" (click)="checkCameraPermission(work)">
+          Tomar Foto
+        </ion-button>
+        <ion-button size="small" [disabled]="!work.TSTT_FOTO" (click)="viewPicture(work.TSTT_FOTO!)">
+          Ver Foto
+        </ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button size="small" color="danger" (click)="removeDetail(i)">
+          Eliminar
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <div class="button-container">
+    <ion-button class="save-button" expand="full" size="large" color="primary" [disabled]="!hasChanges" (click)="saveChanges()">
+      Guardar Cambios
+    </ion-button>
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addDetail()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

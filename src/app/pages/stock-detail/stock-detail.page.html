@@ -1,0 +1,152 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button icon="chevron-back"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="ion-padding">
+
+    <ion-card class="ion-margin-bottom">
+      <ion-card-header>
+        <ion-row>
+          <ion-col size="12" class="ion-text-center">
+            <ion-card-title>{{ product?.IMA_DESCRIPCION }}</ion-card-title>
+          </ion-col>
+        </ion-row>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="2">
+              <ion-icon name="pricetag-outline" size="large"></ion-icon>
+            </ion-col>
+            <ion-col size="4">
+              <ion-label color="dark">
+                <strong >CÓDIGO:</strong>
+              </ion-label>
+            </ion-col>
+            <ion-col size="6">
+              <ion-label>
+                {{ product?.IMA_ARTICULO }}
+              </ion-label>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="2">
+              <ion-icon name="barcode-outline" size="large"></ion-icon>
+            </ion-col>
+            <ion-col size="4">
+              <ion-label color="dark">
+                <strong>CÓDIGO DE BARRAS:</strong>
+              </ion-label>
+            </ion-col>
+            <ion-col size="6">
+              <ion-label>
+                {{ product?.IMA_CODIGO_BARRAS }}
+              </ion-label>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="2">
+              <ion-icon name="business-outline" size="large"></ion-icon>
+            </ion-col>
+            <ion-col size="4">
+              <ion-label color="dark">
+                <strong>MARCA:</strong>
+              </ion-label>
+            </ion-col>
+            <ion-col size="6">
+              <ion-label>
+                {{ product?.SUBLI_MARCA  }}
+              </ion-label>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="2">
+              <ion-icon name="layers-outline" size="large"></ion-icon>
+            </ion-col>
+            <ion-col size="4">
+              <ion-label color="dark">
+                <strong>LINEA:</strong>
+              </ion-label>
+            </ion-col>
+            <ion-col size="6">
+              <ion-label>
+                {{ product?.LI_DESCRIPCION }}
+              </ion-label>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="2">
+              <ion-icon name="swap-vertical-outline" size="large"></ion-icon>
+            </ion-col>
+            <ion-col size="4">
+              <ion-label color="dark">
+                <strong>SUBLINEA:</strong>
+              </ion-label>
+            </ion-col>
+            <ion-col size="6">
+              <ion-label>
+                {{ product?.SUBLI_DESCRIPCION }}
+              </ion-label>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+    
+    
+    
+
+    <ion-card class="ion-padding">
+      <ion-card-header>
+        <ion-row class="ion-align-items-center">
+          <ion-col size="8">
+            <ion-card-title class="ion-text-wrap">Detalles</ion-card-title>
+          </ion-col>
+        </ion-row>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="ion-margin-bottom">
+          <h3 class="ion-text-uppercase">Precios</h3>
+          <div *ngFor="let price of [
+              { name: 'Precio 1', value: product?.IMA_PRECIO1, icon: 'cash-outline' },
+              { name: 'Precio 2', value: product?.IMA_PRECIO2, icon: 'wallet-outline' },
+              { name: 'Precio 3', value: product?.IMA_PRECIO3, icon: 'card-outline' }
+            ]">
+            <ion-item lines="none">
+              <ion-icon [name]="price.icon" slot="start" size="large" color="tertiary"></ion-icon>
+              <ion-label class="ion-text-wrap">
+                <h2>{{ price.name }}</h2>
+              </ion-label>
+              <ion-label color="tertiary" class="ion-text-end">
+                <strong style="font-size: large;">${{ price.value }}</strong>
+              </ion-label>
+            </ion-item>
+          </div>
+        </div>
+        <div>
+          <h3 class="ion-text-uppercase">Stocks</h3>
+          <div *ngFor="let stock of [
+              { name: 'Stock Bodega Americas', value: product?.STOCK_BAE },
+              { name: 'Stock Bodega Tarqui', value: product?.STOCK_BTE }
+            ]">
+            <ion-item lines="none">
+              <ion-icon [name]="stock.value! > 0 ? 'checkbox-outline' : 'close-circle-outline'" slot="start" size="large" [color]="stock.value! > 0 ? 'success' : 'danger'"></ion-icon>
+              <ion-label class="ion-text-wrap">
+                <h2>{{ stock.name }}</h2>
+              </ion-label>
+              <ion-label [color]="stock.value! > 0 ? 'success' : 'danger'" class="ion-text-end">
+                <strong style="font-size: large;">{{ stock.value | number:'1.2' }}</strong>
+              </ion-label>
+            </ion-item>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+

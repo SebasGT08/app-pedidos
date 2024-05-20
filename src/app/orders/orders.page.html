@@ -1,0 +1,41 @@
+<ion-header [translucent]="true">
+
+  <ion-toolbar>
+  
+    
+    <ion-title>Órdenes</ion-title>
+  </ion-toolbar>
+  
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-searchbar [(ngModel)]="searchTerm" (ionChange)="search()"></ion-searchbar>
+  <ion-list>
+    <ion-item *ngFor="let order of filteredOrders" (click)="selectOrder(order)">
+      <ion-label>
+        <h2>{{ order.TST_CODIGO_FISICO }}</h2>
+        <p>{{ order.TST_TIPO }} - {{ order.TST_CLIENTE }}</p>
+        <p>Fecha: {{ order.TST_FECHA | date }}</p>
+        <!-- Agrega más detalles según necesites -->
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  
+</ion-content>
+<ion-footer>
+
+  <ion-item>
+    <ion-label>Modo Desconectado</ion-label>
+    <ion-toggle [(ngModel)]="modoDesconectado" (ionChange)="toggleModoDesconectado()"></ion-toggle>
+  </ion-item>
+
+  <ion-button expand="block" color="success" (click)="sincronizar()">
+    <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+    Sincronizar Datos
+  </ion-button>
+
+  <ion-button expand="block" color="danger" (click)="logout()">
+    <ion-icon name="log-out-outline" slot="start"></ion-icon>
+    Cerrar Sesión
+  </ion-button>
+</ion-footer>

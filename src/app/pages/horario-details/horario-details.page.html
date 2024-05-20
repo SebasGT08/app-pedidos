@@ -1,0 +1,61 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="openMenu()">
+        <ion-icon slot="icon-only" name="menu"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Detalle Horarios</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-grid>
+    <ion-row>
+      <ion-col size="3">Nombre</ion-col>
+      <ion-col size="2">Fecha</ion-col>
+      <ion-col size="2">Hora Ingreso</ion-col>
+      <ion-col size="2">Hora Salida</ion-col>
+      <ion-col size="3">Observacion</ion-col>
+    </ion-row>
+    <ion-row *ngFor="let horario of horarioDetails; let i = index">
+      <ion-col size="3" class="small-font">{{ horario.TSTH_NOMBRE }}</ion-col>
+      <ion-col size="2" class="small-font">{{ horario.TSTH_FECHA }}</ion-col>
+      <ion-col size="2" class="small-font">{{ horario.TSTH_HORA_INGRESO }}</ion-col>
+      <ion-col size="2" class="small-font">{{ horario.TSTH_HORA_SALIDA }}</ion-col>
+      <ion-col size="3" class="small-font">{{ horario.TSTH_OBSERVACION }}</ion-col>
+    </ion-row>
+  </ion-grid>
+
+  
+
+  <div class="ion-padding">
+    <!-- Updated buttons with icons -->
+    <ion-button 
+      expand="block" 
+      color="success" 
+      (click)="startWork()" 
+      [disabled]="trabajoIniciado">
+      <ion-icon name="play" slot="start"></ion-icon>
+      Iniciar Trabajo
+    </ion-button>
+    <!-- Display start time label if work has started -->
+  <ion-label *ngIf="trabajoIniciado" class="ion-text-center">
+    Trabajo iniciado: {{ horarioActual?.TSTH_FECHA }} a las {{ horarioActual?.TSTH_HORA_INGRESO }}
+  </ion-label>
+    <ion-button 
+      expand="block" 
+      color="danger" 
+      (click)="endWork()" 
+      [disabled]="!trabajoIniciado">
+      <ion-icon name="stop" slot="start"></ion-icon>
+      Terminar Trabajo
+    </ion-button>
+  </div>
+
+  <!-- <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addHorarioDetail()">
+      <ion-icon name="stopwatch"></ion-icon>
+    </ion-fab-button>
+  </ion-fab> -->
+</ion-content>

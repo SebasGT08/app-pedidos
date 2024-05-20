@@ -1,0 +1,16 @@
+
+
+  
+  .button-container {
+    padding: 16px;
+    padding-top: 0; // No añadir padding superior para que el botón esté más cerca del último ion-card
+  }
+  
+  .save-changes-button {
+    --background: var(--ion-color-primary); // Asume que quieres usar el color primario
+    --border-radius: 8px;
+    --color: var(--ion-color-primary-contrast);
+    margin-top: 20px; // Espacio adicional encima del botón
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // Sombra para el botón
+  }
+  

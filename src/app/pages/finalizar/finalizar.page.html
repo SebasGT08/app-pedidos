@@ -1,0 +1,136 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="openMenu()">
+        <ion-icon slot="icon-only" name="menu"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Finalizar Orden</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Finalización de Orden# {{ order?.TST_CODIGO_FISICO }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>Cliente:</strong> {{ order?.TST_CLIENTE }} - {{ order?.CMA_NOMBRE }}</p>
+      <p><strong>Dirección:</strong> {{ order?.TST_DIRECCION }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Detalle del trabajo realizado</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid fixed>
+        <ion-row class="table-header">
+          <ion-col size="6">Descripción del Trabajo</ion-col>
+          <ion-col size="2">Cant.</ion-col>
+          <ion-col size="2">Precio</ion-col>
+          <ion-col size="2">Total</ion-col>
+        </ion-row>
+        <ion-row *ngFor="let work of workDetails">
+          <ion-col size="6">{{ work.TSTT_DESCRIPCION }}</ion-col>
+          <ion-col size="2">{{ work.TSTT_CANTIDAD }}</ion-col>
+          <ion-col size="2">{{ work.TSTT_PRECIO }}</ion-col>
+          <ion-col size="2">{{ work.TSTT_TOTAL }}</ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Detalle de Equipos</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid fixed>
+        <ion-row class="table-header">
+          <ion-col size="3">Cod. Equipo</ion-col>
+          <ion-col size="3">Equipo</ion-col>
+          <ion-col size="2">Marca</ion-col>
+          <ion-col size="2">Modelo</ion-col>
+          <ion-col size="2">Serie</ion-col>
+        </ion-row>
+        <ion-row *ngFor="let equipment of equipmentDetails">
+          <ion-col size="3">{{ equipment.TSTE_COD_EQUIPO }}</ion-col>
+          <ion-col size="3">{{ equipment.TSTE_EQUIPO }}</ion-col>
+          <ion-col size="2">{{ equipment.TSTE_MARCA }}</ion-col>
+          <ion-col size="2">{{ equipment.TSTE_MODELO }}</ion-col>
+          <ion-col size="2">{{ equipment.TSTE_SERIE }}</ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Detalle de Repuestos</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid fixed>
+        <ion-row class="table-header">
+          <ion-col size="3">Cod. Repuesto</ion-col>
+          <ion-col size="3" >Descripcion</ion-col>
+          <ion-col size="2">Cant.</ion-col>
+          <ion-col size="2">Precio</ion-col>
+          <ion-col size="2">Total</ion-col>
+        </ion-row>
+        <ion-row *ngFor="let repuesto of repuestoDetails">
+          <ion-col size="3" >{{ repuesto.TSTR_REPUESTO }}</ion-col>
+          <ion-col size="3">{{ repuesto.TSTR_DESCRIPCION }}</ion-col>
+          <ion-col size="2">{{ repuesto.TSTR_CANTIDAD }}</ion-col>
+          <ion-col size="2">{{ repuesto.TSTR_PRECIO }}</ion-col>
+          <ion-col size="2">{{ repuesto.TSTR_TOTAL }}</ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Horarios de Trabajo</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid fixed>
+        <ion-row class="table-header">
+          <ion-col size="3">Nombre</ion-col>
+          <ion-col size="2">Fecha</ion-col>
+          <ion-col size="2">Hora Ingreso</ion-col>
+          <ion-col size="2">Hora Salida</ion-col>
+          <ion-col size="3">Observacion</ion-col>
+        </ion-row>
+        <ion-row *ngFor="let horario of horarioDetails">
+          <ion-col size="3" class="small-font">{{ horario.TSTH_NOMBRE }}</ion-col>
+          <ion-col size="2" class="small-font">{{ horario.TSTH_FECHA }}</ion-col>
+          <ion-col size="2" class="small-font">{{ horario.TSTH_HORA_INGRESO }}</ion-col>
+          <ion-col size="2" class="small-font">{{ horario.TSTH_HORA_SALIDA }}</ion-col>
+          <ion-col size="3" class="small-font">{{ horario.TSTH_OBSERVACION }}</ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-item lines="none">
+    <ion-label class="ion-text-end">
+      <div><strong>Subtotal:</strong> ${{ order?.TST_SUBTOTAL }}</div>
+      <div><strong>IVA:</strong> ${{ order?.TST_IVA }}</div>
+      <div><strong>TOTAL:</strong> ${{ order?.TST_TOTAL }}</div>
+    </ion-label>
+  </ion-item>
+  
+
+</ion-content>
+
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button expand="block" class="main-button" (click)="firmar()">
+      <ion-icon name="pencil-outline" slot="start"></ion-icon>
+      Firmar
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

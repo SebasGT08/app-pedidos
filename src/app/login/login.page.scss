@@ -1,0 +1,29 @@
+ion-content {
+    --background: #fff; // Cambia esto por cualquier color o imagen que prefieras
+  
+    ion-grid {
+      height: 100%;
+      align-items: center;
+    }
+  
+    .ion-padding {
+      padding: 40px;
+      background: #f9f9f9; // Usa un fondo claro para el formulario para destacarlo
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  
+    ion-item {
+      margin-top: 15px;
+    }
+  
+    ion-button {
+      margin-top: 20px;
+    }
+  
+    a {
+      color: #3880ff; // Usa el color primario de Ionic o el que prefieras
+      text-decoration: none;
+    }
+  }
+  

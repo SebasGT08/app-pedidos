@@ -1,0 +1,11 @@
+.image-container {
+    padding: 10px;
+    text-align: center; // Centra la imagen horizontalmente
+  
+    img {
+      max-height: 80vh; // Asegura que la imagen no sea más alta que el 80% de la pantalla
+      object-fit: contain; // Mantiene la relación de aspecto sin recortar la imagen
+      border-radius: 4px; // Opcional: bordes redondeados para la imagen
+    }
+  }
+  

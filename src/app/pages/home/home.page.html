@@ -1,0 +1,58 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="openMenu()">
+        <ion-icon slot="icon-only" name="menu"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>HOME</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-header class="ion-no-border">
+    <ion-toolbar>
+      <ion-avatar slot="start">
+        <img src="http://192.168.5.3/FERRICENTER/conexion_app_pedidos/administrador/LOGO.png" class="logo-img">
+      </ion-avatar>
+      <ion-title class="ion-text-center" class="title-wrap">FERRICENTER EL ARENAL CIA.LTDA.</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-item lines="none" class="ion-text-center">
+    <ion-label>Bienvenido: {{ username || 'No disponible' }}</ion-label>
+  </ion-item>
+  
+  <ion-list-header>
+    <ion-label>Seleccione una opcion:</ion-label>
+  </ion-list-header>
+  
+  <ion-list>
+    <ion-item>
+      <ion-button expand="full" (click)="btn_stock()">
+        
+        <ion-label>
+          <h3><ion-icon slot="start" name="search"></ion-icon>STOCK</h3>
+          <p>Consultar Stocks de los productos</p>
+        </ion-label>
+      </ion-button>
+    </ion-item>
+    <ion-item>
+      <ion-button expand="full" (click)="btn_nuevo_pedido()">
+        <ion-label>
+          <h3><ion-icon slot="start" name="add-circle-outline"></ion-icon>NUEVO PEDIDO</h3>
+          <p>Crear nuevo pedido</p>
+        </ion-label>
+      </ion-button>
+    </ion-item>
+    <ion-item>
+      <ion-button expand="full" (click)="abrir_nuevo_cliente()">
+        
+        <ion-label>
+          <h3><ion-icon slot="start" name="person-add-outline"></ion-icon>NUEVO CLIENTE</h3>
+          <p>Ingresar nuevo cliente</p>
+        </ion-label>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>
