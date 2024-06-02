@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { LoadingController, MenuController, ModalController, ToastController } from '@ionic/angular';
-import { SelectClientPage } from '../select-client/select-client.page';
+import { LoadingController, MenuController, ToastController } from '@ionic/angular';
+import { Router, NavigationExtras, NavigationEnd } from '@angular/router';
 import { Client } from 'src/app/models/client.model';
-import { SelectProductPage } from '../select-product/select-product.page';
 import { Product } from 'src/app/models/product.model';
 import { AddPedidoService } from 'src/app/services/pedido/add-pedido.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-add-pedido',
@@ -16,7 +16,7 @@ export class AddPedidoPage implements OnInit {
   selectedProducts: Product[] = [];
 
   constructor(
-    private modalController: ModalController, 
+    private router: Router,
     private toastController: ToastController, 
     private menuCtrl: MenuController,
     private addPedidoService: AddPedidoService,
@@ -31,39 +31,22 @@ export class AddPedidoPage implements OnInit {
     this.menuCtrl.open();
   }
 
-  // Abrir modal para seleccionar cliente
   async openClientSelector() {
-    const modal = await this.modalController.create({
-      component: SelectClientPage
-    });
-  
-    await modal.present();
-  
-    // Obtener datos del cliente seleccionado al cerrar el modal
-    const { data } = await modal.onWillDismiss();
-    if (data) {
-      this.selectedClient = data.client;
-    }
-    console.log(this.selectedClient);
-    
+    const navigationExtras: NavigationExtras = {
+      state: {
+        from: 'add-pedido'
+      }
+    };
+    this.router.navigate(['select-client'], navigationExtras);
   }
 
-  // Abrir modal para seleccionar productos
   async openProductSelector() {
-    const modal = await this.modalController.create({
-      component: SelectProductPage
-    });
-  
-    await modal.present();
-  
-
-    // Obtener datos del producto seleccionado al cerrar el modal
-    const { data } = await modal.onWillDismiss();
-    if (data && data.product) {
-      this.selectedProducts.push(data.product);
-      this.showToast('Producto añadido: ' + data.product.IMA_DESCRIPCION);
-    }
-
+    const navigationExtras: NavigationExtras = {
+      state: {
+        from: 'add-pedido'
+      }
+    };
+    this.router.navigate(['select-product'], navigationExtras);
   }
 
   // Al eliminar un producto
@@ -87,7 +70,7 @@ export class AddPedidoPage implements OnInit {
 
     const loading = await this.loadingController.create({
       message: 'Cargando...',
-      spinner: 'circles' // Puedes elegir otros estilos de spinner
+      spinner: 'circles'
     });
     await loading.present();
 
@@ -95,7 +78,7 @@ export class AddPedidoPage implements OnInit {
       const result = await (await this.addPedidoService.addPedido(this.selectedProducts, this.selectedClient)).toPromise();
 
       if (result.valid == 'true') {
-        loading.dismiss(); // Ocultar mensaje de carga
+        loading.dismiss();
         const successToast = await this.toastController.create({
           message: 'Pedido '+result.msg+' enviado exitosamente!',
           duration: 8000,
@@ -103,11 +86,10 @@ export class AddPedidoPage implements OnInit {
           color: 'success'
         });
         successToast.present();
-        // Resetear selecciones después de un envío exitoso
         this.selectedClient = undefined;
         this.selectedProducts = [];
       } else {
-        loading.dismiss(); // Ocultar mensaje de carga
+        loading.dismiss();
         const errorToast = await this.toastController.create({
           message:  'Error al procesar el pedido: '+result.msg,
           duration: 2000,
@@ -117,7 +99,7 @@ export class AddPedidoPage implements OnInit {
         errorToast.present();
       }
     } catch (error) {
-      loading.dismiss(); // Ocultar mensaje de carga
+      loading.dismiss();
       const errorToast = await this.toastController.create({
         message:  'Error al enviar el pedido.',
         duration: 2000,
@@ -128,12 +110,28 @@ export class AddPedidoPage implements OnInit {
     }
   }
 
-  
   ngOnInit() {
-    
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      const navigation = this.router.getCurrentNavigation();
+      if (navigation && navigation.extras.state) {
+        if (navigation.extras.state['client']) {
+          this.selectedClient = navigation.extras.state['client'];
+        }
+        if (navigation.extras.state['product']) {
+          const product = navigation.extras.state['product'];
+          if (!this.selectedProducts.find(p => p.IMA_ARTICULO === product.IMA_ARTICULO)) {
+            this.selectedProducts.push(product);
+            this.showToast('Producto añadido: ' + product.IMA_DESCRIPCION);
+          } else {
+            this.showToast('El producto ya está añadido', 'warning');
+          }
+        }
+      }
+    });
   }
 
-  // Método para mostrar toast
   async showToast(message: string, color = 'success') {
     const toast = await this.toastController.create({
       message: message,
@@ -143,5 +141,4 @@ export class AddPedidoPage implements OnInit {
     });
     await toast.present();
   }
-
 }

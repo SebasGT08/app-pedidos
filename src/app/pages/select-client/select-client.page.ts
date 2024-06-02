@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Client } from 'src/app/models/client.model';
-import { MenuController, LoadingController, ToastController, NavController, ModalController } from '@ionic/angular';
+import { MenuController, LoadingController, ToastController } from '@ionic/angular';
 import { BehaviorSubject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, tap, finalize } from 'rxjs/operators';
+import { debounceTime, switchMap, tap, finalize } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ClientService } from 'src/app/services/client/client.service';
 
@@ -27,15 +27,12 @@ export class SelectClientPage implements OnInit {
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
     private clientService: ClientService,
-    private modalController: ModalController,
-
+    private router: Router
   ) { }
 
   ngOnInit() {
-
     this.searchQuery.pipe(
       debounceTime(300),
-      // distinctUntilChanged((prev, curr) => prev.query === curr.query && prev.page === curr.page),
       tap(() => this.presentLoading()),
       switchMap(({query, page}) =>
         this.clientService.searchClients(query, page).pipe(
@@ -57,7 +54,6 @@ export class SelectClientPage implements OnInit {
     });
     await this.loading.present();
   }
-
 
   openMenu() {
     this.menuCtrl.open();
@@ -95,11 +91,13 @@ export class SelectClientPage implements OnInit {
     toast.present();
   }
 
-  async clientSelected(client: Client){
-    // Cerrar el modal y pasar el cliente seleccionado como data
-    await this.modalController.dismiss({
-      client: client
-    });
+  clientSelected(client: Client) {
+    const navigationExtras = {
+      state: {
+        client: client
+      }
+    };
+    this.router.navigate(['add-pedido'], navigationExtras);
   }
 
 }

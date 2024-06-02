@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuController, LoadingController, ToastController, NavController, ModalController } from '@ionic/angular';
+import { MenuController, LoadingController, ToastController } from '@ionic/angular';
 import { BehaviorSubject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, tap, finalize } from 'rxjs/operators';
 import { Product } from 'src/app/models/product.model';
 import { StockService } from 'src/app/services/stock/stock.service';
 import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
 import { Router } from '@angular/router';
+import { Capacitor, Plugins } from '@capacitor/core';
 
 @Component({
   selector: 'app-select-product',
@@ -23,18 +24,17 @@ export class SelectProductPage implements OnInit {
   
   searchValue: string = ''; //
 
-  isScanning: boolean = false;
-
   constructor(
     private menuCtrl: MenuController,
     private stockService: StockService,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
-    private router: Router,
-    private modalController: ModalController,
+    private router: Router
   ) { }
 
   ngOnInit() {
+    this.initializeBackButtonCustomBehavior();
+
     this.searchQuery.pipe(
       debounceTime(300),
       // distinctUntilChanged((prev, curr) => prev.query === curr.query && prev.page === curr.page),
@@ -47,7 +47,7 @@ export class SelectProductPage implements OnInit {
       tap(response => {
         this.totalResults = response.total;
         this.products = response.data;
-        this.totalPages = Math.ceil(this.totalResults / 5);
+        this.totalPages = Math.ceil(this.totalResults / 20);
       })
     ).subscribe();
   }
@@ -59,17 +59,17 @@ export class SelectProductPage implements OnInit {
 
       if (status.granted) {
         BarcodeScanner.hideBackground();
-        // this.router.navigate(['/cam']);
-        this.isScanning = true;
+        this.router.navigate(['/cam']);
+
         document.body.classList.add('scanner-active'); // Activa la vista de la cámara
         // Optionally prepare the scanner
         BarcodeScanner.prepare();
-        
+
         // Start scanning
         BarcodeScanner.startScan().then(result => {
           if (result.hasContent) {
-            // this.router.navigate(['/add-pedido']);
-            this.isScanning = false;
+            this.router.navigate(['/select-product']);
+
             console.log('Barcode data:', result.content);
             this.handleScanResult(result.content);
             this.searchValue = result.content;
@@ -78,8 +78,8 @@ export class SelectProductPage implements OnInit {
             BarcodeScanner.stopScan(); // Stop scanning      
           }
         }).catch(error => {
-          // this.router.navigate(['/add-pedido']);
-          this.isScanning = false;
+          this.router.navigate(['/cam']);
+
           this.handleScanError(error);
         });
       } else {
@@ -120,7 +120,7 @@ export class SelectProductPage implements OnInit {
   }
 
   nextPage() {
-    if (this.currentPage * 5 < this.totalResults) {
+    if (this.currentPage * 20 < this.totalResults) {
       this.currentPage++;
       this.triggerSearch(this.searchQuery.value.query);
     }
@@ -146,25 +146,31 @@ export class SelectProductPage implements OnInit {
     toast.present();
   }
 
-  async productSelected(product: Product){
-    // Cerrar el modal y pasar el cliente seleccionado como data
-    await this.modalController.dismiss({
-      product: product
-    });
+  initializeBackButtonCustomBehavior() {
+    if (Capacitor.isNativePlatform()) {
+      Plugins['App']['addListener']('backButton', () => {
+        // Aquí implementas lo que debe suceder cuando el botón de atrás es presionado
+        if (this.router.url === '/cam') {
+          // Suponiendo que '/cam' es la ruta donde está activa la cámara
+          BarcodeScanner.stopScan();  // Detener el escaneo
+          BarcodeScanner.showBackground();
+          document.body.classList.remove('scanner-active');
+          this.router.navigate(['/stock']); // Vuelve a la página de stock o donde necesites
+        } else {
+          // Si no está en la cámara, maneja el retroceso normalmente
+          window.history.back();
+        }
+      });
+    }
   }
 
-
-  async hideUIElements() {
-    document.querySelectorAll('.ui-element').forEach(element => {
-      element.classList.add('hidden');
-    });
+  productSelected(product: Product) {
+    const navigationExtras = {
+      state: {
+        product: product
+      }
+    };
+    this.router.navigate(['add-pedido'], navigationExtras);
   }
-  
-  async showUIElements() {
-    document.querySelectorAll('.ui-element').forEach(element => {
-      element.classList.remove('hidden');
-    });
-  }
-  
 
 }

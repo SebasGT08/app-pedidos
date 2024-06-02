@@ -48,7 +48,7 @@ export class StockPage implements OnInit {
       tap(response => {
         this.totalResults = response.total;
         this.products = response.data;
-        this.totalPages = Math.ceil(this.totalResults / 5);
+        this.totalPages = Math.ceil(this.totalResults / 20);
       })
     ).subscribe();
   }
@@ -121,7 +121,7 @@ export class StockPage implements OnInit {
   }
 
   nextPage() {
-    if (this.currentPage * 5 < this.totalResults) {
+    if (this.currentPage * 20 < this.totalResults) {
       this.currentPage++;
       this.triggerSearch(this.searchQuery.value.query);
     }
