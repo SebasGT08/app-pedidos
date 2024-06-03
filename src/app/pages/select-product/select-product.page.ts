@@ -40,7 +40,7 @@ export class SelectProductPage implements OnInit {
       // distinctUntilChanged((prev, curr) => prev.query === curr.query && prev.page === curr.page),
       tap(() => this.presentLoading()),
       switchMap(({query, page, code}) =>
-        this.stockService.searchProducts(query, page, code).pipe(
+        this.stockService.searchProductsPedido(query, page, code).pipe(
           finalize(() => this.loading.dismiss())
         )
       ),

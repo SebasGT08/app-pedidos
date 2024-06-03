@@ -14,6 +14,10 @@ import { filter } from 'rxjs/operators';
 export class AddPedidoPage implements OnInit {
   selectedClient: Client | undefined;
   selectedProducts: Product[] = [];
+  IVA_PAGAR: number = 0;
+  SUBTOTAL_PAGAR: number = 0;
+  TOTAL_PAGAR: number = 0;
+  selectedPrice: string = 'IMA_PRECIO1'; 
 
   constructor(
     private router: Router,
@@ -53,7 +57,49 @@ export class AddPedidoPage implements OnInit {
   removeProduct(product: Product) {
     this.selectedProducts = this.selectedProducts.filter(p => p !== product);
     this.showToast('Producto eliminado: ' + product.IMA_DESCRIPCION, 'danger');
+    this.updateTotales();
   }
+
+  // Actualizar la cantidad de un producto
+  updateProductQuantity(product: Product, quantity: number) {
+    const prod = this.selectedProducts.find(p => p.IMA_ARTICULO === product.IMA_ARTICULO);
+    if (prod) {
+      prod.CANTIDAD = quantity;
+    }
+    this.updateTotales();
+  }
+
+
+  getPrice(product: Product): number {
+    switch (this.selectedPrice) {
+      case 'IMA_PRECIO1':
+        return product.IMA_PRECIO1;
+      case 'IMA_PRECIO2':
+        return product.IMA_PRECIO2;
+      case 'IMA_PRECIO3':
+        return product.IMA_PRECIO3;
+      default:
+        return product.IMA_PRECIO1;
+    }
+  }
+
+
+  // Calcular el total
+  updateTotales() {
+    this.SUBTOTAL_PAGAR = this.selectedProducts.reduce((sum, product) => {
+      return sum + (this.getPrice(product) * (product.CANTIDAD || 1));
+    }, 0);
+
+    this.IVA_PAGAR = this.selectedProducts.reduce((sum, product) => {
+      const productSubtotal = this.getPrice(product) * (product.CANTIDAD || 1);
+      const productIVA = productSubtotal * product.IMA_PROCENTAJE_IVA;
+      return sum + productIVA;
+    }, 0);
+
+    this.TOTAL_PAGAR = this.SUBTOTAL_PAGAR + this.IVA_PAGAR;
+  }
+
+  
 
   // Enviar pedido
   async submitOrder() {
@@ -67,6 +113,8 @@ export class AddPedidoPage implements OnInit {
       await toast.present();
       return;
     }
+
+    this.selectedClient.SELECTED_PRICE = this.selectedPrice;
 
     const loading = await this.loadingController.create({
       message: 'Cargando...',
@@ -88,6 +136,8 @@ export class AddPedidoPage implements OnInit {
         successToast.present();
         this.selectedClient = undefined;
         this.selectedProducts = [];
+        this.updateTotales();
+        this.selectedPrice = 'IMA_PRECIO1';
       } else {
         loading.dismiss();
         const errorToast = await this.toastController.create({
@@ -121,15 +171,24 @@ export class AddPedidoPage implements OnInit {
         }
         if (navigation.extras.state['product']) {
           const product = navigation.extras.state['product'];
+          product.CANTIDAD = 1;  // Inicializar cantidad a 1 por defecto
           if (!this.selectedProducts.find(p => p.IMA_ARTICULO === product.IMA_ARTICULO)) {
             this.selectedProducts.push(product);
             this.showToast('Producto añadido: ' + product.IMA_DESCRIPCION);
+            this.updateTotales(); 
           } else {
             this.showToast('El producto ya está añadido', 'warning');
           }
         }
       }
     });
+  }
+
+  onPriceSelectionChange(event: any) {
+    if (this.selectedClient) {
+      this.selectedClient.SELECTED_PRICE = this.selectedPrice;
+    }
+    this.updateTotales();
   }
 
   async showToast(message: string, color = 'success') {

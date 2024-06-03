@@ -10,4 +10,6 @@ export interface Product {
   STOCK_BTE: number;
   LI_DESCRIPCION: string;
   SUBLI_DESCRIPCION: string;
+  CANTIDAD: number;
+  IMA_PROCENTAJE_IVA: number;
 }

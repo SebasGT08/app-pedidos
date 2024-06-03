@@ -4,4 +4,5 @@ export interface Client {
     CMA_DIRECCION : string;
     CMA_TELEFONO1: string;
     CMA_EMAIL: string;
+    SELECTED_PRICE?: string;
 }
