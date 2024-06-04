@@ -18,34 +18,6 @@ const routes: Routes = [
     loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule)
   },
   {
-    path: 'orders',
-    loadChildren: () => import('./orders/orders.module').then( m => m.OrdersPageModule),
-    canActivate: [AuthGuard] // Protege esta ruta con el AuthGuard
-  },
-  {
-    path: 'order-details',
-    loadChildren: () => import('./pages/order-details/order-details.module').then( m => m.OrderDetailsPageModule),
-    canActivate: [AuthGuard] // Protege esta ruta con el AuthGuard
-  },
-  {
-    path: 'work-details',
-    loadChildren: () => import('./pages/workDetails/work-details/work-details.module').then( m => m.WorkDetailsPageModule),
-    canActivate: [AuthGuard] // Protege esta ruta con el AuthGuard
-  },
-
-
-
-  {
-    path: 'horario-details',
-    loadChildren: () => import('./pages/horario-details/horario-details.module').then( m => m.HorarioDetailsPageModule),
-    canActivate: [AuthGuard] // Protege esta ruta con el AuthGuard
-  },
-  {
-    path: 'finalizar',
-    loadChildren: () => import('./pages/finalizar/finalizar.module').then( m => m.FinalizarPageModule),
-    canActivate: [AuthGuard] // Protege esta ruta con el AuthGuard
-  },
-  {
     path: 'home',
     loadChildren: () => import('./pages/home/home.module').then( m => m.HomePageModule),
     canActivate: [AuthGuard] // Protege esta ruta con el AuthGuard

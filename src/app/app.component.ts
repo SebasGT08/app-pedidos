@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 import { StorageService } from 'src/app/services/storage/storage.service';
-import { Order } from './models/order.model';
+
 import {  OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from './services/login/auth.service';
-import { SyncPendientesService } from './services/syncPendientes/sync-pendientes.service';
 import { AlertController } from '@ionic/angular';
 
 @Component({
@@ -30,7 +29,7 @@ export class AppComponent implements OnInit {
 
   ];
   public labels = [];
-  public ordenActual: Order | null = null; 
+  // public ordenActual: Order | null = null; 
   public username: string | null = null;
   public cod_usu: string | null = null;
   
@@ -39,7 +38,6 @@ export class AppComponent implements OnInit {
     private storageService: StorageService,
     private router: Router,
     private authService: AuthService,
-    private syncPendientesService: SyncPendientesService,
     private alertController: AlertController,
     
     ) {}
@@ -48,15 +46,15 @@ export class AppComponent implements OnInit {
     //this.syncPendientesService.checkServerAndSync();
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        this.loadOrderData();
+        // this.loadOrderData();
         this.loadUserData();
       }
     });
   }
 
-  async loadOrderData() {
-    this.ordenActual = await this.storageService.getOrderData();
-  }
+  // async loadOrderData() {
+  //   this.ordenActual = await this.storageService.getOrderData();
+  // }
 
   async loadUserData() {
     const us = await this.storageService.getCurrentUser();
@@ -65,14 +63,14 @@ export class AppComponent implements OnInit {
   }
 
   async logout() {
-    let pendiente = await this.storageService.isEverythingProcessed();
-    if (pendiente == true) {
-      this.storageService.removeOrderData();
+    // let pendiente = await this.storageService.isEverythingProcessed();
+    // if (pendiente == true) {
+      // this.storageService.removeOrderData();
       this.authService.logout();
       this.router.navigateByUrl('/login');
-    } else {
-      this.presentAlert('Alerta', 'Existen cambios pendientes, sincronice los datos primero');
-    }
+    // } else {
+    //   this.presentAlert('Alerta', 'Existen cambios pendientes, sincronice los datos primero');
+    // }
   }
 
   async presentAlert(header: string, message: string) {

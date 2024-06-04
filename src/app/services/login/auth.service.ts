@@ -71,8 +71,8 @@ export class AuthService {
   logout() {
     // Eliminamos el usuario del almacenamiento y reseteamos el BehaviorSubject
     this.storageService.removeCurrentUser(); // Usamos el método del StorageService
-    this.storageService.removeOrderList();
-    this.storageService.removeOrderData();
+    // this.storageService.removeOrderList();
+    // this.storageService.removeOrderData();
     this.currentUserSubject.next(null);
   }
 }
