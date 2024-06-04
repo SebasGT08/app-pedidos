@@ -12,4 +12,7 @@ export interface Product {
   SUBLI_DESCRIPCION: string;
   CANTIDAD: number;
   IMA_PROCENTAJE_IVA: number;
+  MAX_DESC: number;
+  PROMOCION: string;
+  DESCUENTO: number;
 }
