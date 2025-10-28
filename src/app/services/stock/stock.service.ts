@@ -43,7 +43,7 @@ export class StockService {
   }
 
   // Función para buscar productos por término usando POST para pedido
-  public searchProductsPedido(valor: string, pagina: number = 0, code?: string): Observable<{total: number, data: Product[]}> {
+  public searchProductsPedido(valor: string, pagina: number = 0, code?: string, bodega?: string): Observable<{total: number, data: Product[]}> {
     return new Observable(observer => {
       this.storageService.getServerIP().then(DIR_HTML => {
         const url = `${DIR_HTML}/datos/datos-obtener_productos_pedido.php`;
@@ -54,6 +54,9 @@ export class StockService {
         if (code) {
           data_envio.set('code', code); // Set the scanned code if it exists
         }
+
+        data_envio.set('bodega', bodega?.toString() || ''); // Set the bodega if it exists
+
   
         let headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
   

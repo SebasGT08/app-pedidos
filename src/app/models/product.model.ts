@@ -15,4 +15,11 @@ export interface Product {
   MAX_DESC: number;
   PROMOCION: string;
   DESCUENTO: number;
+  TIENE_PROMOCION: string;
+  ES_REGALO: string;
+  IMA_LIQUIDACION: number;
+  EXISTENCIA: number;
+  DESCUENTO_EXCP: number;
+  FACTOR_CANTIDAD: number;
+  PROMO_BASE_ARTICULO: string;
 }

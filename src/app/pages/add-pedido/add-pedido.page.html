@@ -10,6 +10,7 @@
 </ion-header>
 
 <ion-content>
+
   <!-- Selección del Cliente -->
   <ion-card>
     <ion-card-header>
@@ -20,6 +21,7 @@
         <ion-label>Escoger Cliente</ion-label>
         <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
       </ion-item>
+
       <ion-list>
         <ion-item>
           <ion-label position="stacked" color="medium">RUC</ion-label>
@@ -37,28 +39,149 @@
           <ion-label position="stacked" color="medium">Teléfono</ion-label>
           <ion-input readonly [ngModel]="selectedClient?.CMA_TELEFONO1"></ion-input>
         </ion-item>
+        <ion-item>
+          <ion-label position="stacked" color="medium">Dirección</ion-label>
+          <ion-input readonly [ngModel]="selectedClient?.CMA_DIRECCION"></ion-input>
+        </ion-item>
       </ion-list>
-    </ion-card-content>
-  </ion-card>
 
-  <!-- Selección de Precio -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Seleccionar Precio</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-item>
-        <ion-label>Precio</ion-label>
-        <ion-select [(ngModel)]="selectedPrice" (ionChange)="onPriceSelectionChange($event)">
-          <ion-select-option value="IMA_PRECIO1">Precio 1</ion-select-option>
-          <ion-select-option value="IMA_PRECIO2">Precio 2</ion-select-option>
-          <ion-select-option value="IMA_PRECIO3">Precio 3</ion-select-option>
-        </ion-select>
+      <!-- Info adicional del cliente -->
+      <ion-grid class="ion-margin-top">
+        <ion-row>
+          <ion-col size="6">
+            <ion-label color="medium">Calificación</ion-label>
+            <div>
+              <ion-badge [color]="selectedClient?.LBL_CALIFICACION_COLOR || 'medium'">
+                {{ selectedClient?.LBL_CALIFICACION || '—' }}
+              </ion-badge>
+            </div>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label color="medium">Crédito</ion-label>
+            <div>
+              <ion-badge [color]="selectedClient?.LBL_SUJETO_COLOR || 'medium'">
+                {{ selectedClient?.LBL_SUJETO || '—' }}
+              </ion-badge>
+            </div>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col size="6">
+            <ion-label color="medium">Vencido</ion-label>
+            <div>{{ selectedClient?.LBL_VENCIDO || '—' }}</div>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label color="medium">Valor Vencido</ion-label>
+            <div>{{ selectedClient?.LBL_VAL_VENCIDO || '—' }}</div>
+          </ion-col>
+        </ion-row>
+
+        <ion-row *ngIf="selectedClient?.BLOQUEADO">
+          <ion-col size="12">
+            <ion-label color="medium">Estado</ion-label>
+            <div>{{ selectedClient?.BLOQUEADO }}</div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <!-- Observación del cliente (debajo de la info) -->
+      <ion-item lines="full" class="ion-margin-top">
+        <ion-label position="stacked" color="medium">Observación del Cliente</ion-label>
+        <ion-text style="white-space: pre-wrap;">
+          {{ selectedClient?.CMA_OBSERVACIONES || '—' }}
+        </ion-text>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-note color="medium">
+          Este texto es informativo y viene del cliente seleccionado.
+        </ion-note>
       </ion-item>
     </ion-card-content>
   </ion-card>
 
-  <!-- Selección de Productos -->
+  <!-- Bodega -->
+  <!-- Bodega -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Bodega</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="stacked">Seleccione Bodega</ion-label>
+        <ion-select [(ngModel)]="selectedBodega" interface="popover" placeholder="Bodega" [disabled]="!canChangeBodega"
+          (ionFocus)="rememberBodega()" (ionChange)="handleBodegaChange($event)">
+          <ion-select-option *ngFor="let b of bodegas" [value]="b.BOD_CODIGO">
+            {{ b.BOD_DESCRIPCION }} ({{ b.BOD_CODIGO }})
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-note color="medium">
+        Las promociones y existencias se consultan según esta bodega.
+      </ion-note>
+
+      <ion-item *ngIf="!canChangeBodega" lines="none">
+        <ion-note color="warning">
+          No puede cambiar la bodega con productos cargados. Elimine los productos para habilitar el cambio.
+        </ion-note>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Condiciones de pago / entrega -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Condiciones de Pago y Entrega</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+
+      <ion-item>
+        <ion-label position="stacked">Forma de Pago</ion-label>
+        <ion-select [(ngModel)]="formaPago" interface="popover" placeholder="Seleccione una forma de pago"
+          [disabled]="pagoContraEntrega">
+          <ion-select-option *ngFor="let fp of formasPago" [value]="fp.FPA_TIPO">
+            {{ fp.FPA_DESCRIPCION }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Plazo (días)</ion-label>
+        <ion-input type="number" [(ngModel)]="plazoDias" min="0" placeholder="Ej.: 30"
+          [readonly]="pagoContraEntrega"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Fecha de Entrega</ion-label>
+        <ion-datetime presentation="date" [(ngModel)]="fechaEntregaISO"></ion-datetime>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-label>Pago contra entrega</ion-label>
+        <ion-checkbox slot="end" [(ngModel)]="pagoContraEntrega"
+          (ionChange)="onPagoContraEntregaChange()"></ion-checkbox>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Subzona</ion-label>
+        <ion-select [(ngModel)]="subzona" interface="popover" placeholder="SubZona">
+          <ion-select-option *ngFor="let sz of subzonas" [value]="sz.SZN_CODIGO">
+            {{ sz.SZN_DESCRIPCION }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Observación del Pedido</ion-label>
+        <ion-textarea auto-grow placeholder="Ej.: Entregar en portería, atención Sr. Pérez"
+          [(ngModel)]="obsPedido"></ion-textarea>
+      </ion-item>
+
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Productos -->
   <ion-card>
     <ion-card-header>
       <ion-card-title>Agregar Productos</ion-card-title>
@@ -68,32 +191,50 @@
         <ion-label>Añadir Producto</ion-label>
         <ion-icon slot="end" name="add-circle-outline"></ion-icon>
       </ion-item>
+
       <ion-list>
         <ion-card *ngFor="let product of selectedProducts">
           <ion-card-header>
             <ion-row class="ion-align-items-center">
-              <ion-col size="6">
-                <ion-badge *ngIf="product.PROMOCION === 'si'" color="success" mode="ios">
-                  Tiene Promoción
-                </ion-badge>
+              <ion-col size="7" class="ion-no-padding">
+                <ion-badge *ngIf="product.TIENE_PROMOCION === 'si'" color="success" mode="ios">PROMO</ion-badge>
+                <ion-badge *ngIf="product.ES_REGALO === 'si'" color="primary" mode="ios">REGALO</ion-badge>
+                <ion-badge *ngIf="product.IMA_LIQUIDACION == 1" color="tertiary" mode="ios">LIQUIDACIÓN</ion-badge>
                 <ion-badge color="warning" mode="ios">
                   ${{ getPrice(product) | number:'1.2-2' }}
                 </ion-badge>
-                
               </ion-col>
-              <ion-col size="6" class="ion-text-right">
+
+              <ion-col size="5" class="ion-text-right">
                 <ion-card-subtitle>
-                  Cantidad: 
-                  <ion-input type="number" [(ngModel)]="product.CANTIDAD" (ngModelChange)="updateProductQuantity(product, $event)" min="1"></ion-input>
+                  Cantidad:
+                  <ion-input type="number" [readonly]="product.ES_REGALO === 'si'" [(ngModel)]="product.CANTIDAD"
+                    (ngModelChange)="updateProductQuantity(product, $event)" min="1"></ion-input>
                 </ion-card-subtitle>
               </ion-col>
             </ion-row>
           </ion-card-header>
+
           <ion-card-content>
+            <ion-row class="ion-margin-bottom">
+              <ion-col size="12">
+                <ion-label>Precio</ion-label>
+                <ion-segment [disabled]="product.ES_REGALO === 'si'" [ngModel]="getProductPrice(product)"
+                  (ngModelChange)="setProductPrice(product, $event)">
+                  <ion-segment-button *ngFor="let p of storePrecios" [value]="p.VALOR">
+                    <ion-label>{{ p.TIPO }}</ion-label>
+                  </ion-segment-button>
+                </ion-segment>
+              </ion-col>
+            </ion-row>
+
             <ion-row>
               <ion-col size="8">
                 <ion-card-title>{{ product.IMA_ARTICULO }}</ion-card-title>
                 <ion-card-subtitle>{{ product.IMA_DESCRIPCION }}</ion-card-subtitle>
+                <ion-note color="medium" *ngIf="product.EXISTENCIA !== undefined">
+                  Stock: {{ product.EXISTENCIA }}
+                </ion-note>
               </ion-col>
               <ion-col size="4" class="ion-text-right">
                 <ion-button fill="clear" color="danger" size="large" (click)="removeProduct(product)">
@@ -101,22 +242,38 @@
                 </ion-button>
               </ion-col>
             </ion-row>
+
             <ion-row>
               <ion-col size="6">
                 <ion-label>Descuento (%)</ion-label>
-                <ion-input type="number" [(ngModel)]="product.DESCUENTO" (ngModelChange)="updateProductDiscount(product, $event)" min="0" max="{{product.MAX_DESC}}"></ion-input>
+                <ion-input type="number" [readonly]="product.ES_REGALO === 'si' || (product.DESCUENTO_EXCP||0) > 0"
+                  [(ngModel)]="product.DESCUENTO" (ngModelChange)="updateProductDiscount(product, $event)" [min]="0"
+                  [max]="product.MAX_DESC"></ion-input>
+                <ion-note color="medium">Máx: {{ product.MAX_DESC | number:'1.0-2' }}%</ion-note>
+                <ion-note color="warning" *ngIf="(product.DESCUENTO_EXCP||0) > 0">
+                  Desc. excepcional activo: {{ product.DESCUENTO_EXCP }}%
+                </ion-note>
               </ion-col>
+
               <ion-col size="6">
-                <ion-card-subtitle>Subtotal: {{ ((getPrice(product) * (1 - (product.DESCUENTO / 100))) * product.CANTIDAD) | currency }}</ion-card-subtitle>
+                <ion-card-subtitle>
+                  Subtotal:
+                  {{
+                  ((getPrice(product) * (1 - (getEffectiveDiscount(product) / 100))) * (product.CANTIDAD || 1))
+                  | currency
+                  }}
+                </ion-card-subtitle>
               </ion-col>
             </ion-row>
+
           </ion-card-content>
         </ion-card>
       </ion-list>
+
     </ion-card-content>
   </ion-card>
 
-  <!-- Mostrar Total -->
+  <!-- Totales -->
   <ion-card>
     <ion-card-header>
       <ion-card-title>Total</ion-card-title>
@@ -136,6 +293,7 @@
       </ion-item>
     </ion-card-content>
   </ion-card>
+
 </ion-content>
 
 <ion-footer>

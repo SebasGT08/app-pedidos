@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MenuController, LoadingController, ToastController } from '@ionic/angular';
 import { BehaviorSubject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, tap, finalize } from 'rxjs/operators';
+import { debounceTime, switchMap, tap, finalize } from 'rxjs/operators';
 import { Product } from 'src/app/models/product.model';
 import { StockService } from 'src/app/services/stock/stock.service';
 import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
@@ -19,10 +19,15 @@ export class SelectProductPage implements OnInit {
   totalResults = 0;
   totalPages = 0;
   products: Product[] = [];
+
+  // Ahora usamos un subject con query+page+code (la bodega la tenemos como prop del componente)
   searchQuery = new BehaviorSubject<{query: string, page: number, code?: string}>({query: '', page: 0});
+
   loading: any;
-  
-  searchValue: string = ''; //
+  searchValue: string = '';
+
+  // >>> NUEVO: bodega recibida desde add-pedido (o localStorage)
+  private selectedBodega: string | null = null;
 
   constructor(
     private menuCtrl: MenuController,
@@ -35,12 +40,27 @@ export class SelectProductPage implements OnInit {
   ngOnInit() {
     this.initializeBackButtonCustomBehavior();
 
+    // ====== Capturar bodega que llega por navigation extras (o fallback a localStorage) ======
+    // Preferimos el state más reciente (router.getCurrentNavigation) y si no, history.state
+    const nav = this.router.getCurrentNavigation();
+    const stateBodega = nav?.extras?.state?.['bodega'] ?? (history.state && history.state['bodega']);
+    const storedBodega = localStorage.getItem('BODEGA_SELECCIONADA');
+
+    this.selectedBodega = stateBodega || storedBodega || null;
+
+    // ====== Pipeline de búsqueda enviando la bodega al servicio ======
     this.searchQuery.pipe(
       debounceTime(300),
-      // distinctUntilChanged((prev, curr) => prev.query === curr.query && prev.page === curr.page),
       tap(() => this.presentLoading()),
       switchMap(({query, page, code}) =>
-        this.stockService.searchProductsPedido(query, page, code).pipe(
+        // Opción A: si tu servicio tiene firma con parámetro bodega separado:
+        // this.stockService.searchProductsPedido(query, page, code, this.selectedBodega).pipe(
+        //   finalize(() => this.loading.dismiss())
+        // )
+
+        // Opción B (recomendada): si tu servicio acepta un objeto de opciones:
+        //   searchProductsPedido(query, page, code, { bodega: this.selectedBodega })
+        this.stockService.searchProductsPedido(query, page, code, this.selectedBodega!).pipe(
           finalize(() => this.loading.dismiss())
         )
       ),
@@ -50,36 +70,31 @@ export class SelectProductPage implements OnInit {
         this.totalPages = Math.ceil(this.totalResults / 20);
       })
     ).subscribe();
+
+    // Dispara la búsqueda inicial (respetando bodega)
+    this.triggerSearch('');
   }
 
   async scanCode() {
-    
-
     BarcodeScanner.checkPermission({ force: true }).then((status) => {
-
       if (status.granted) {
         BarcodeScanner.hideBackground();
         this.router.navigate(['/cam']);
 
-        document.body.classList.add('scanner-active'); // Activa la vista de la cámara
-        // Optionally prepare the scanner
+        document.body.classList.add('scanner-active');
         BarcodeScanner.prepare();
 
-        // Start scanning
         BarcodeScanner.startScan().then(result => {
           if (result.hasContent) {
             this.router.navigate(['/select-product']);
-
-            console.log('Barcode data:', result.content);
             this.handleScanResult(result.content);
             this.searchValue = result.content;
             BarcodeScanner.showBackground();
-            document.body.classList.remove('scanner-active'); // Desactiva la vista de la cámara
-            BarcodeScanner.stopScan(); // Stop scanning      
+            document.body.classList.remove('scanner-active');
+            BarcodeScanner.stopScan();
           }
         }).catch(error => {
           this.router.navigate(['/cam']);
-
           this.handleScanError(error);
         });
       } else {
@@ -94,7 +109,6 @@ export class SelectProductPage implements OnInit {
   }
 
   handleScanResult(barcodeData: string) {
-    console.log('Contenido escaneado:', barcodeData);
     this.triggerSearch(this.searchQuery.value.query, barcodeData);
   }
 
@@ -149,15 +163,12 @@ export class SelectProductPage implements OnInit {
   initializeBackButtonCustomBehavior() {
     if (Capacitor.isNativePlatform()) {
       Plugins['App']['addListener']('backButton', () => {
-        // Aquí implementas lo que debe suceder cuando el botón de atrás es presionado
         if (this.router.url === '/cam') {
-          // Suponiendo que '/cam' es la ruta donde está activa la cámara
-          BarcodeScanner.stopScan();  // Detener el escaneo
+          BarcodeScanner.stopScan();
           BarcodeScanner.showBackground();
           document.body.classList.remove('scanner-active');
-          this.router.navigate(['/stock']); // Vuelve a la página de stock o donde necesites
+          this.router.navigate(['/stock']);
         } else {
-          // Si no está en la cámara, maneja el retroceso normalmente
           window.history.back();
         }
       });
@@ -165,11 +176,11 @@ export class SelectProductPage implements OnInit {
   }
 
   productSelected(product: Product) {
-    const navigationExtras = {
-      state: {
-        product: product
-      }
-    };
+    // Aquí NO hace falta reenviar la bodega; add-pedido la mantiene.
+    // Si igual quisieras preservarla explícitamente:
+    // const navigationExtras = { state: { product, bodega: this.selectedBodega } };
+
+    const navigationExtras = { state: { product } };
     this.router.navigate(['add-pedido'], navigationExtras);
   }
 
